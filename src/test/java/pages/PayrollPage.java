@@ -7,19 +7,17 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select; // Import the Select class
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
 
 public class PayrollPage {
     private static WebDriver driver;
+    private static WebDriverWait wait;
 
     @FindBy(id = "mnuPayrolls")
     private WebElement payrollsMenu;
@@ -27,7 +25,7 @@ public class PayrollPage {
     @FindBy(id = "ph1_btnCreate")
     private WebElement createButton;
 
-    @FindBy(id = "ctl00_ph1_cmbPayrollType_Input") // Locate the dropdown element
+    @FindBy(id = "ctl00_ph1_cmbPayrollType_Input") 
     private WebElement payrollTypeDropdown;
 
     @FindBy(id = "ctl00_ph1_cmbMonth_Input")
@@ -39,9 +37,6 @@ public class PayrollPage {
     @FindBy(id = "ctl00_ph1_rdpTo_dateInput")
     private WebElement toDateInput;
 
-    @FindBy(id = "ph1_btnSave")
-    private WebElement saveButton;
-
     @FindBy(id = "ctl00_ph1_cmbEmployeeTypeDynamic_Input")
     private WebElement payGroup;
 
@@ -51,7 +46,7 @@ public class PayrollPage {
     @FindBy(how = How.XPATH, using = "//div[@class='raDiv']") 
 	WebElement LOADINGSPLASH;
 
-    @FindBy(id = "ph1_btnNext")
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ph1_btnNext\"]")
     private WebElement nextButton;
 
     @FindBy(id = "ph1_SaveDiv")
@@ -64,8 +59,9 @@ public class PayrollPage {
     private WebElement payrollSummaryTable;
 
     public PayrollPage(WebDriver driver) {
-        this.driver = driver;
+        PayrollPage.driver = driver;
         PageFactory.initElements(driver, this);
+        PayrollPage.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
 
@@ -75,19 +71,12 @@ public class PayrollPage {
         createButton.click();
     }
 
-    public void setupPayrollRun(){
-        selectPayGroup("Check All");
-        selectPayrollType("Normal Payroll");
-        setFromDate("9/1/2024");
-        setToDate("9/15/2024");
-        selectMonth("October");
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
+    public void setupPayrollRun(String fromDate, String toDate, String payrollType, String payGroup, String month){
+        selectPayGroup(payGroup);
+        selectPayrollType(payrollType);
+        setFromDate(fromDate);
+        setToDate(toDate);
+        selectMonth(month);
     }
 
     public void validatePayrollSummaryTableIsVisible() {
@@ -99,17 +88,15 @@ public class PayrollPage {
     }
 
     public void savePayrollRun(){
+        waitElementToBeInvisible(LOADINGSPLASH);
+        WebElement saveButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"ph1_btnSave\"]")));
         saveButton.click();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
     }
 
     public void nextStep(){
         waitElementToBeInvisible(LOADINGSPLASH);
+        WebElement nextButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"ph1_btnNext\"]")));
         nextButton.click();
     }
 
@@ -118,8 +105,6 @@ public class PayrollPage {
     public void saveAndProcessPayrollRun(){
         waitElementToBeInvisible(LOADINGSPLASH);
         hoverOverElement(saveHover);
-        // WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        // wait.until(ExpectedConditions.elementToBeClickable(saveAndProcessButton));
         saveAndProcessButton.click();
     }
 
@@ -130,7 +115,7 @@ public class PayrollPage {
 
     public void selectPayrollType(String payrollType) {
         payrollTypeDropdown.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        
         // Use the specific payrollType in the XPath expression to find the WebElement
         WebElement specificPayrollTypeOption = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ctl00_ph1_cmbPayrollType_DropDown']/div/ul/li[contains(text(),'" + payrollType + "')]")));
         specificPayrollTypeOption.click();
@@ -138,9 +123,16 @@ public class PayrollPage {
 
     public void selectMonth(String month) {
         monthDropdown.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        // Use the specific month in the XPath expression to find the WebElement
-        WebElement specificMonthOption = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ctl00_ph1_cmbMonth_DropDown']/div/ul/li[contains(text(),'" + month + "')]")));
+
+        waitElementToBeInvisible(LOADINGSPLASH);
+
+        
+
+        @SuppressWarnings("unused")
+        WebElement dropdownOptionsContainer = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"ctl00_ph1_cmbMonth_DropDown\"]/div/ul")));
+
+        // Now, find and click the specific month option within the dropdown
+        WebElement specificMonthOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='ctl00_ph1_cmbMonth_DropDown']/div/ul/li[contains(text(),'" + month + "')]")));
         specificMonthOption.click();
     }
 
@@ -156,17 +148,10 @@ public class PayrollPage {
 
     public void selectPayGroup(String paygroup) {
         payGroup.click();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        selectAllCheckbox.click();
-        // Use the specific payGroup in the XPath expression to find the WebElement
-        // WebElement specificPayGroupOption = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ctl00_ph1_cmbEmployeeTypeDynamic_DropDown']/div/ul/li//descendant::label[contains(text(),'" + paygroup + "')]")));
-        // specificPayGroupOption.click();
+        
+        // Use the specific payGroup in the XPath expression to find the WebElement by its text 
+        WebElement specificPayGroupOption = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ctl00_ph1_cmbEmployeeTypeDynamic_DropDown']/div/ul/li//descendant::label[contains(text(),'" + paygroup + "')]")));
+        specificPayGroupOption.click();
     }
 
     public static void waitElementToBeInvisible(WebElement element) {

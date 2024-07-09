@@ -7,11 +7,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import pages.PayrollPage;
 import utils.WebDriverManager;
-
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-// import org.openqa.selenium.interactions.Actions;
 
 public class PayrollRunStepDefinitions {
     private WebDriver driver;
@@ -37,11 +33,18 @@ public class PayrollRunStepDefinitions {
        payrollPage.createNewPayrollRun();
     }
 
-    @And("I set up the payroll run")
-    public void i_set_up_the_payroll_run() {
-        payrollPage.setupPayrollRun();
-        
-        
+    // In src/test/java/stepdefinitions/PayrollRunStepDefinitions.java
+    @And("^I set up the payroll run for (.*) from (.*) to (.*) with (.*) pay group and (.*) month$")
+    public void i_set_up_the_payroll_run_with_parameters(String payrollType, String fromDate, String toDate, String payGroup, String month) {
+        System.out.println("Payroll Type: " + payrollType + ", From Date: " + fromDate + ", To Date: " + toDate + ", Pay Group: " + payGroup + ", Month: " + month);
+        payrollPage.setupPayrollRun(fromDate, toDate, payrollType, payGroup, month);
+    }
+
+    @And("^I complete the payroll run process$")
+    public void i_complete_the_payroll_run_process() {
+        i_save_the_payroll_run();
+        i_proceed_to_the_next_step();
+        i_save_and_process_the_payroll_run();
     }
 
     @And("I save the payroll run")
@@ -62,6 +65,6 @@ public class PayrollRunStepDefinitions {
     @Then("the Payroll Summary table is visible")
     public void the_payroll_summary_table_is_visible() {
         payrollPage.validatePayrollSummaryTableIsVisible();
-        driver.quit();
+        // driver.quit();
     }
 }

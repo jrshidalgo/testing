@@ -6,8 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 public class loginPage {
-    private WebDriver driver;
-
+    
     @FindBy(id = "txtUsername")
     private WebElement usernameField;
 
@@ -21,7 +20,6 @@ public class loginPage {
     private WebElement companyName;
 
     public loginPage(WebDriver driver) {
-        this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
