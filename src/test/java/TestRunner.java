@@ -6,7 +6,8 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features/PayrollRunScenario.feature",
         glue = "stepdefinitions",
-        plugin = { "pretty" }
+        plugin = { "pretty" },
+        tags = "@downloadPayrollSummary"
 )
 public class TestRunner {
 }

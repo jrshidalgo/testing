@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class PayrollPage {
     private static WebDriver driver;
@@ -58,10 +59,25 @@ public class PayrollPage {
     @FindBy(id = "ctl00_ph1_grdPayroll")
     private WebElement payrollSummaryTable;
 
+    @FindBy(how = How.XPATH, using = "//*[@id=\"mnuReports\"]")
+    private WebElement REPORTSMENU;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"smoothmenu1\"]/ul/li[2]/ul/li[1]")
+    private WebElement payrollReports;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"mnuPayrollSummary\"]")
+    private WebElement payrollSummaryOption;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ph1_btnToExcel\"]")
+    private WebElement downloadButton;
+    
+
+    
+
     public PayrollPage(WebDriver driver) {
         PayrollPage.driver = driver;
         PageFactory.initElements(driver, this);
-        PayrollPage.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        PayrollPage.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
 
@@ -168,4 +184,65 @@ public class PayrollPage {
 			attempts++;
 		}
 	}
+
+    public void navigateToReportsMenu() {
+        
+        hoverOverElement(REPORTSMENU);
+    }
+
+    public void selectPayrollFromDropdown() {
+        hoverOverElement(payrollReports);
+    }
+
+    public void choosePayrollSummaryFromOptions() {
+        wait.until(ExpectedConditions.visibilityOf(payrollSummaryOption));
+        payrollSummaryOption.click();
+    }
+
+    public void filterReportForNormalPayrollInJanuary(String payrollRunType, String month) {
+        // Assuming the table rows are within a tbody tag under a table with a specific ID or class
+        List<WebElement> rows = driver.findElements(By.xpath("//table[@id='ctl00_ph1_grdPayrolls_ctl00']/tbody/tr"));
+        
+        for (WebElement row : rows) {
+            // Assuming the first column contains the month and the second column contains the Payroll Run Type
+            String selectedMonth = row.findElement(By.xpath(".//td[3]")).getText();
+            String selectedPayrollRunType = row.findElement(By.xpath(".//td[5]")).getText();
+            System.out.println("Month: " + selectedMonth + ", Payroll Run Type: " + selectedPayrollRunType);
+            System.out.println(month + " " + payrollRunType);
+            if (selectedMonth.equals(month) && selectedPayrollRunType.equals(payrollRunType)) {
+                // Assuming there's an action to be performed on the row, like clicking a checkbox or a button
+                WebElement firstElement = row.findElement(By.xpath(".//td[1]")); // Using XPath to get the first <td> element of the row
+                firstElement.click();
+                break; // Exit the loop once the correct row is found and action is performed
+            }
+        }
+        waitElementToBeInvisible(LOADINGSPLASH);
+    }
+
+    public void exportPayrollSummaryExcelFile() {
+        downloadButton.click();
+    }
+
+    public void gotoReportsLogPage() {
+       
+        WebElement reportsLog = wait.until(ExpectedConditions.visibilityOfElementLocated(By .xpath("//*[@id='ph1_lblReportStatusReady']/span/a")));
+        reportsLog.click();
+    }
+
+
+
+    public void clickDownloadButton() {
+        WebElement row = driver.findElement(By.xpath("//table[@id='ctl00_ph1_grdQueue_ctl00']/tbody/tr[1]"));
+        WebElement downloadButton = row.findElement(By.xpath(".//td[4]"));
+        downloadButton.click();
+        
+        
+    }
+
+
+
+
+
+
+
 }

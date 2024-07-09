@@ -67,4 +67,48 @@ public class PayrollRunStepDefinitions {
         payrollPage.validatePayrollSummaryTableIsVisible();
         // driver.quit();
     }
+
+    @When("I navigate to the REPORTS menu")
+    public void I_navigate_to_the_menu() {
+        payrollPage.navigateToReportsMenu();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("I select PAYROLL from the dropdown")
+    public void I_select_from_the_dropdown() {
+        payrollPage.selectPayrollFromDropdown();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("I choose PAYROLL SUMMARY from the options")
+    public void I_choose_from_the_options() {
+        payrollPage.choosePayrollSummaryFromOptions();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("^I select the report for (.*) run type in (.*)$")
+    public void I_filter_the_report_for_run_type_in(String payrollRunType, String month) {
+        payrollPage.filterReportForNormalPayrollInJanuary(payrollRunType, month);
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @And("I download the Payroll Summary Excel file")
+    public void I_download_the_Payroll_Summary_Excel_file_for_January_Normal_Payroll_Run_Type() {
+        payrollPage.exportPayrollSummaryExcelFile();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @Then("I click Download")
+    public void I_click_Download() {
+        payrollPage.clickDownloadButton();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("I go to Reports Log Page")
+    public void I_go_to_Reports_Log_Page() {
+        payrollPage.gotoReportsLogPage();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+
 }
