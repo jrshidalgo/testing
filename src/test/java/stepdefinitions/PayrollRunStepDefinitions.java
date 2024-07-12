@@ -110,5 +110,33 @@ public class PayrollRunStepDefinitions {
         // Write code here that turns the phrase above into concrete actions
     }
 
+    @When("^I click the adjustments link for (.*)$")
+    public void I_click_the_adjustments_link_for_(String id) {
+        payrollPage.clickAdjustmentsLink(id);
 
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("^I enter the adjustment details with (.*) type, named as (.*), Code (.*), Amount of (.*) and a Remarks of (.*)$")
+    public void I_enter_the_adjustment_details_with_named_as_Code_Amount_of_and_a_Remarks_of(String type, String name, String code, String amount, String remarks) {
+        payrollPage.enterAdjustmentDetails(type, name, code, amount, remarks);
+    }
+
+    @When("^I validate if adjustment record is created successfully with (.*) type, named as (.*), Code (.*), Amount of (.*) and a Remarks of (.*)$")
+    public void I_validate_if_adjustment_is_created(String type, String name, String code, String amount, String remarks) {
+        payrollPage.validateAdjustmentRecord(type, name, code, amount, remarks);
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("I close the modal")
+    public void I_close_the_modal() {
+        payrollPage.closeAdjustmentModal();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @When("I click add new record button")
+    public void I_click_add_new_record_button() {
+        payrollPage.I_click_add_new_record_button();
+
+    }
 }

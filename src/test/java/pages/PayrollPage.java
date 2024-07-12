@@ -11,6 +11,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -70,6 +71,22 @@ public class PayrollPage {
 
     @FindBy(how = How.XPATH, using = "//*[@id=\"ph1_btnToExcel\"]")
     private WebElement downloadButton;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_txtName\"]")
+    private WebElement adjustmentName;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_txtCode\"]")
+    private WebElement adjustmentCode;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_txtAmount\"]")
+    private WebElement adjustmentAmount;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_txtRemarks\"]")
+    private WebElement adjustmentRemarks;
+
+    @FindBy(how = How.XPATH, using = "//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_lnkItemUpdate\"]")
+    private WebElement saveAdjButton;
+
     
 
     
@@ -207,8 +224,6 @@ public class PayrollPage {
             // Assuming the first column contains the month and the second column contains the Payroll Run Type
             String selectedMonth = row.findElement(By.xpath(".//td[3]")).getText();
             String selectedPayrollRunType = row.findElement(By.xpath(".//td[5]")).getText();
-            System.out.println("Month: " + selectedMonth + ", Payroll Run Type: " + selectedPayrollRunType);
-            System.out.println(month + " " + payrollRunType);
             if (selectedMonth.equals(month) && selectedPayrollRunType.equals(payrollRunType)) {
                 // Assuming there's an action to be performed on the row, like clicking a checkbox or a button
                 WebElement firstElement = row.findElement(By.xpath(".//td[1]")); // Using XPath to get the first <td> element of the row
@@ -239,10 +254,71 @@ public class PayrollPage {
         
     }
 
+    public void clickAdjustmentsLink(String id) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='kendoRightGridEmployees']/table/tbody/tr")));
+        List<WebElement> employeeRows = driver.findElements(By.xpath("//div[@id='kendoRightGridEmployees']/table/tbody/tr"));
+        
+        for (WebElement row : employeeRows) {
+           
+            String selectedID = row.findElement(By.xpath(".//td[3]")).getText();
+            if (selectedID.equals(id)) {
+                WebElement adjustmentsLink = row.findElement(By.xpath(".//td[2]")); 
+                adjustmentsLink.click();
+                break; 
+            }
+        }
+    }
 
 
 
+    public void I_click_add_new_record_button() {
+        driver.switchTo().frame("winEmployeeData");
+        WebElement addNewRecordButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl00_InitInsertButton\"]")));
+        addNewRecordButton.click();
+
+    }
+
+    public void enterAdjustmentDetails(String type, String name, String code, String amount, String remarks) {
+        WebElement adjustmentTypeDropDown = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_cmbType_Input']")));
+        adjustmentTypeDropDown.click();
+        WebElement adjustmentType = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_cmbType_DropDown\"]/div/ul/li[contains(text(),'" + type + "')]")));
+        adjustmentType.click();
+        waitElementToBeInvisible(LOADINGSPLASH);
+
+        // WebElement adjustmentName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='ctl00_ph1_grdAdjustments_ctl00_ctl02_ctl03_txtName']")));
+        
+        adjustmentName.sendKeys(name);
+        adjustmentCode.sendKeys(code);
+        adjustmentAmount.sendKeys(amount);
+        adjustmentRemarks.sendKeys(remarks);
+        saveAdjButton.click();
+    }
 
 
+
+    public void validateAdjustmentRecord(String type, String name, String code, String amount, String remarks) {
+        waitElementToBeInvisible(LOADINGSPLASH);
+        List<WebElement> adjustmentRows = driver.findElements(By.xpath("//div[@id='ctl00_ph1_grdAdjustments']/table/tbody/tr"));
+        boolean nameFound = false;
+        System.out.println("Adjustment Rows: " + adjustmentRows.size());
+        for (WebElement row : adjustmentRows) {
+            String selectedType = row.findElement(By.xpath(".//td[2]")).getText();
+            String selectedName = row.findElement(By.xpath(".//td[4]")).getText();
+            String selectedCode = row.findElement(By.xpath(".//td[5]")).getText();
+            String selectedAmount = row.findElement(By.xpath(".//td[6]")).getText();
+            selectedAmount = selectedAmount.replaceAll("[^\\d.]", "");
+            String selectedRemarks = row.findElement(By.xpath(".//td[7]")).getText();
+            if (selectedName.equals(name) && selectedType.equals(type) && selectedCode.equals(code) && selectedAmount.equals(amount) && selectedRemarks.equals(remarks)){
+                nameFound = true;
+            } 
+        }
+        Assert.assertTrue("Adjustment record not found.", nameFound);
+    }
+
+    public void closeAdjustmentModal() {
+        driver.switchTo().defaultContent();
+        WebElement closeButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"RadWindowWrapper_ctl00_ph1_winEmployeeData\"]/table/tbody/tr[1]/td[2]/table/tbody/tr/td[3]/ul/li/a")));
+        closeButton.click();
+    }
 
 }
