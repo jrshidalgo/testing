@@ -122,6 +122,11 @@ public class PayrollRunStepDefinitions {
         payrollPage.enterAdjustmentDetails(type, name, code, amount, remarks);
     }
 
+    @When("^I enter the recurring adjustment details with (.*) type, named as (.*), Code (.*), Amount of (.*), Adjustment date of (.*) and a Remarks of (.*)$")
+    public void I_enter_the_adjustment_details_with_named_as_Code_Amount_of_Adjustment_date_of_and_a_Remarks_of(String type, String name, String code, String amount, String date, String remarks) {
+        payrollPage.enterRecurringAdjustmentDetails(type, name, code, amount, date, remarks);
+    }
+
     @When("^I validate if adjustment record is created successfully with (.*) type, named as (.*), Code (.*), Amount of (.*) and a Remarks of (.*)$")
     public void I_validate_if_adjustment_is_created(String type, String name, String code, String amount, String remarks) {
         payrollPage.validateAdjustmentRecord(type, name, code, amount, remarks);
@@ -138,5 +143,21 @@ public class PayrollRunStepDefinitions {
     public void I_click_add_new_record_button() {
         payrollPage.I_click_add_new_record_button();
 
+    }
+
+    @When("I click the Employees tab")
+    public void I_click_the_Employees_tab() {
+        payrollPage.clickEmployeesTab();
+        // Write code here that turns the phrase above into concrete actions
+    }
+
+    @Given("^I validate if recurring adjustment record is created successfully with (.*) type, named as (.*), Code (.*), Amount of (.*) and a Remarks of (.*)$")
+    public void I_validate_if_recurring_adjustment_record_is_created_successfully_with_Basic_Adjustment_type_named_as_Code_Amount_of_Adjustment_date_of_and_a_Remarks_of(String type, String name, String code, String amount, String remarks) {
+        payrollPage.validateRecurringAdjustmentRecord(type, name, code, amount, remarks);
+    }
+
+    @Given("^I validate if recurring adjustment record in the modal is created successfully with (.*) type, named as (.*), Code (.*), Amount of (.*) and a Remarks of (.*)$")
+    public void I_validate_if_recurring_adjustment_record_in_the_modal_is_created_successfully_with_type_named_as_Code_Amount_of_and_a_Remarks_of_(String type, String name, String code, double amount, String remarks) {
+        payrollPage.validateAdjustmentRecordModal(type, name, code, amount, remarks);
     }
 }
