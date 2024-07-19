@@ -160,4 +160,10 @@ public class PayrollRunStepDefinitions {
     public void I_validate_if_recurring_adjustment_record_in_the_modal_is_created_successfully_with_type_named_as_Code_Amount_of_and_a_Remarks_of_(String type, String name, String code, double amount, String remarks) {
         payrollPage.validateAdjustmentRecordModal(type, name, code, amount, remarks);
     }
+
+    @When("^I add the attendance table adjustments for id (.*)$")
+    public void I_add_the_attendance_table_adjustments(String id) {
+        payrollPage.addAttendanceTableAdjustments(id);
+      
+    }
 }

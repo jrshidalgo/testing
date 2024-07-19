@@ -2,6 +2,7 @@ package pages;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -106,6 +107,7 @@ public class PayrollPage {
     @FindBy(how = How.XPATH, using = "//*[@id=\"ctl00_ph1_grdAdj_ctl00_ctl02_ctl03_lnkItemUpdate\"]")
     private WebElement saveRecurringAdjButton;
 
+    
 
     public PayrollPage(WebDriver driver) {
         PayrollPage.driver = driver;
@@ -429,6 +431,41 @@ public class PayrollPage {
             } 
         }
         Assert.assertTrue("Adjustment record not found.", rowFound);
+    }
+
+    public void addValueInTable(WebElement row, String xpath, String value){
+    WebElement inputElement = row.findElement(By.xpath(xpath));
+    
+    // Scroll the element into view using JavascriptExecutor
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    js.executeScript("arguments[0].scrollIntoView(true);", inputElement);
+
+
+    wait.until(ExpectedConditions.elementToBeClickable(inputElement));
+
+    inputElement.clear();
+    inputElement.sendKeys(value);
+}
+
+
+    public void addAttendanceTableAdjustments(String id) {
+        waitElementToBeInvisible(LOADINGSPLASH);
+        List<WebElement> attendanceTableRows = driver.findElements(By.xpath("//*[@id=\"ctl00_ph1_RadGrid1_GridData\"]/table/tbody/tr"));
+        System.out.println("Attendance Table Rows: " + attendanceTableRows.size());
+        for(WebElement row: attendanceTableRows){
+            String selectedID = row.findElement(By.xpath(".//td[1]/input")).getAttribute("value");
+            System.out.println(selectedID);
+            if (selectedID.equals(id)) {
+
+                addValueInTable(row, ".//td[4]/input", "3");
+                addValueInTable(row, ".//td[5]/input", "2");
+                for(int x = 6; x < 44; x++){
+                    addValueInTable(row, ".//td["+x+"]/input", "12:00");
+                }
+                break; 
+            }
+        }
+       
     }
 
 
